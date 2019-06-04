@@ -9,6 +9,7 @@ theme: sandstone
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(boot)
+library(perm)
 library(broom)
 theme_set(theme_bw())
 knitr::opts_chunk$set(echo = TRUE)
@@ -27,7 +28,7 @@ media_gols = function(d, dia) {
     pull(media)
 }
 
-theta_gols = function(d, i) {
+theta_dom_qua = function(d, i) {
   aux = d %>% slice(i)
   gols_domingo = media_gols(aux, "Domingo")
   gols_quarta = media_gols(aux, "Quarta-feira")
@@ -35,7 +36,7 @@ theta_gols = function(d, i) {
   return(diferenca)
 }
 
-boot_dom_qua = dados %>% boot(statistic = theta_gols, R = 4000) %>% 
+boot_dom_qua = dados %>% boot(statistic = theta_dom_qua, R = 4000) %>% 
   tidy(conf.level = .95,
        conf.int = TRUE)
 
@@ -45,3 +46,65 @@ boot_dom_qua = dados %>% boot(statistic = theta_gols, R = 4000) %>%
 ```{r}
 boot_dom_qua
 ```
+
+
+```{r}
+set.seed(145)
+
+theta_gols_empate = function(d, i){
+  aux = d %>% slice(i)
+  
+  gols_empate = aux %>% 
+    filter(Vencedor == "-") %>% 
+    summarise(n = mean(gols)) %>% 
+    pull()
+  
+  gols_vencedor =  aux %>% 
+    filter(Vencedor != "-") %>% 
+    summarise(n = mean(gols)) %>% 
+    pull()
+  
+  diferenca = gols_vencedor - gols_empate
+  
+  return(diferenca)
+  
+}
+
+boot_gols_empate = dados %>% boot(statistic = theta_gols_empate, R = 4000) %>% 
+  tidy(conf.level = .95,
+       conf.int = TRUE)
+```
+
+```{r}
+boot_gols_empate
+```
+
+```{r}
+gols_domingo = dados %>% 
+  filter(Dia == "Domingo") %>% 
+  pull(gols)
+
+
+gols_quarta = dados %>% 
+  filter(Dia == "Quarta-feira") %>% 
+  pull(gols)
+
+
+permTS(gols_domingo, gols_quarta)
+
+```
+```{r}
+gols_vencedor = dados %>% 
+  filter(Vencedor == "-") %>% 
+  pull(gols)
+
+
+gols_empate = dados %>% 
+  filter(Vencedor != "-") %>% 
+  pull(gols)
+
+
+permTS(gols_vencedor, gols_empate)
+
+```
+ 
