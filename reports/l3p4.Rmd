@@ -1,5 +1,6 @@
 ---
-title: "L3P4"
+title: "P-valores vc ICs"
+author: David Pereira e Mariana Marques
 output:
     html_document:
     df_print: paged
@@ -17,6 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r read, warning=FALSE, message=FALSE}
 dados = read_csv2(here::here("data/campeonato-brasileiro-full.csv"))
+
+set.seed(1234)
 ```
 
 ```{r}
@@ -107,4 +110,16 @@ gols_empate = dados %>%
 permTS(gols_vencedor, gols_empate)
 
 ```
+
+***
+
+## Conclusão
+
+Observando os p-valores e os intervalos de confiança obtidos das duas métricas podemos dizer que:
+</br>
+  </br> - Não é significante o p-valor encontrado para a métrica da questão 1, por tanto, provavelmente não há mais gols nos jogos aos domingos que jogos às quartas. O intervalo de confiança dessa métrica nos mostra a mesma conclusão que obtivemos para o teste anterior. Pelo o intervalo de confiança estar entre -0.47 e	0.41 e, consequentemente, conter o 0, concluímos que há possibilidade de haver a mesma quantidade de gols em jogos aos domingos e em jogos às quartas, não sendo possível afirmar que há mais em um dia que em outro.
+  </br> - Já o p-valor encontrado para a métrica da questão 2 nos mostrou um resultado muito signifcante, assim, podemos dizer que há mais gols nos jogos onde há um vencendor do que nos jogos que haja empate. O mesmo resultado foi encontrado quando observamos o intervalo de confiança, que está entre 0.21 a 0.91, sendo superior a 0 e mostrando que possivelmente os número de gols de jogos com vencendores é mesmo maior que os o número de gols com jogos empatados.
+
+</br>
+Em ambas as métricas os resultados convergiram, mas temos mais informações quando observamos os resultados dos ICs, pois sabemos como o resultado está distribuído, seu máximo e seu mínimo. Já o teste de hipótese apenas nos diz se é possivel que a métrica tenha significância ou não.
  
